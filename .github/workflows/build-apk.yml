@@ -32,11 +32,11 @@ jobs:
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
-      - name: Set Up JDK
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'oracle'
           java-version: '17'
+          distribution: 'temurin'
             
       # Only for Testing github-actions
       - uses: actions-rs/toolchain@v1
@@ -61,8 +61,6 @@ jobs:
           
       - name: Set up Cardboard SDK and ALVR dependencies
 
-        env:
-          JAVA_TOOL_OPTIONS: "-XX:-UseContainerSupport"
         run: |
           cd code/mobile/android/PhoneVR
           
@@ -78,7 +76,7 @@ jobs:
             
             # Build the AAR using Cardboard's gradle wrapper
             cd cardboard-master
-            ./gradlew sdk:assembleRelease -Parm64-v8a -Dorg.gradle.jvmargs="-Xmx4g -XX:-UseContainerSupport"
+            ./gradlew sdk:assembleRelease -Parm64-v8a
             cd ..
             
             # Move the compiled artifacts into the expected location
