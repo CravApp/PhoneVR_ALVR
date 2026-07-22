@@ -61,7 +61,7 @@ jobs:
           
       - name: Set up Cardboard SDK and ALVR dependencies
         env:
-          ORG_GRADLE_PROJECT_jvmargs: "-XX:-UseContainerSupport"
+          ORG_GRADLE_PROJECT_jvmargs: "-Xmx4g -XX:-UseContainerSupport"
         run: |
           cd code/mobile/android/PhoneVR
           
