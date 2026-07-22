@@ -60,8 +60,7 @@ jobs:
           cache-read-only: ${{ false }}
           
       - name: Set up Cardboard SDK and ALVR dependencies
-        env:
-          ORG_GRADLE_PROJECT_jvmargs: "-Xmx4g -XX:-UseContainerSupport"
+      
         run: |
           cd code/mobile/android/PhoneVR
           
@@ -77,7 +76,7 @@ jobs:
             
             # Build the AAR using Cardboard's gradle wrapper
             cd cardboard-master
-            ./gradlew sdk:assembleRelease -Parm64-v8a
+            ./gradlew sdk:assembleRelease -Parm64-v8a -Porg.gradle.jvmargs="-Xmx4g -XX:-UseContainerSupport"
             cd ..
             
             # Move the compiled artifacts into the expected location
