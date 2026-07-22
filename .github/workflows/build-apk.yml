@@ -111,11 +111,26 @@ jobs:
       # Create APK Release
       - name: Build apk noGvr release project (APK)
         env:
-          Key: ${{ secrets.KEY }}
-          Store: ${{ secrets.STORE }}
-        run:  |
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }} # Store your .jks file encoded in base64 as a secret
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
           cd code/mobile/android/PhoneVR
-          ./gradlew :${{ env.MAIN_PROJECT_MODULE }}:assembleNoGvrRelease --warning-mode=all --stacktrace -Dorg.gradle.java.home=${{env.JAVA_HOME}}
+          
+          # 1. Recreate the keystore file dynamically from a base64 GitHub Secret
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Decoding Keystore from Secrets..."
+            echo "$KEYSTORE_BASE64" | base64 --decode > app/PhoneVRKeyStore.jks
+          fi
+
+          # 2. Run Gradle with signing properties passed as command-line arguments
+          ./gradlew :${{ env.MAIN_PROJECT_MODULE }}:assembleNoGvrRelease \
+            -Pandroid.signingConfigs.release.storeFile=PhoneVRKeyStore.jks \
+            -Pandroid.signingConfigs.release.storePassword="$KEYSTORE_PASSWORD" \
+            -Pandroid.signingConfigs.release.keyAlias="$KEY_ALIAS" \
+            -Pandroid.signingConfigs.release.keyPassword="$KEY_PASSWORD" \
+            --warning-mode=all --stacktrace -Dorg.gradle.java.home=${{ env.JAVA_HOME }}
 
       # Upload Artifact Build
       # Upload Debug APK
