@@ -60,6 +60,8 @@ jobs:
           cache-read-only: ${{ false }}
           
       - name: Set up Cardboard SDK and ALVR dependencies
+        env:
+          ORG_GRADLE_PROJECT_jvmargs: "-XX:-UseContainerSupport"
         run: |
           cd code/mobile/android/PhoneVR
           
